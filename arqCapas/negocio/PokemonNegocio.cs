@@ -51,7 +51,17 @@ namespace negocio //depende de negocio ahora
 
                     aux.Nombre = (string)lector["Nombre"];              //le aclaro.. fuerzo que entienda.. que devuelve un string..
                     aux.Descripcion = (string)lector["Descripcion"];
-                    aux.UrlImagen = (string)lector["UrlImagen"];
+
+                    //para evitar que crashee podemos validar.. consultando si es nulo el UrlImagen... 2 soluciones
+                    // 1---
+                    //     if (!(lector.IsDBNull(lector.GetOrdinal("UrlImagen"))))
+                    //     aux.UrlImagen = (string)lector["UrlImagen"];
+                    //aca se consulta si la columna UrlImagen es nula... entonces la negamos porque necesitamos que si es 
+                    //nula no la lea asi evitamos que crashee..
+                    // 2--
+
+                    if (!(lector["UrlImagen"] is DBNull))               //si la ubicacion del lector "Url" es nula.. negado
+                        aux.UrlImagen = (string)lector["UrlImagen"];    //entonces afirmativo.. no lee y el string queda vacio
 
                     //tipo elemento no esta instanciado
                     aux.Tipo = new Elemento();
@@ -60,14 +70,13 @@ namespace negocio //depende de negocio ahora
                     aux.Debilidad = new Elemento();
                     aux.Debilidad.Descripcion = (string)lector["Debilidad"];
 
-
                     lista.Add(aux); //agrego a la lista.. en cada vuelva posicion de vector... hasta q de falso y termina
                 }
 
 
                 conexion.Close(); // se puede colocar en finaly por si falla el try
 
-                return lista;                       //si la conexion sale bien retorna una lista sino throw exeption
+                return lista;       //si la conexion sale bien retorna una lista sino throw exception
 
             } //fin try
             catch (Exception ex)
@@ -82,8 +91,18 @@ namespace negocio //depende de negocio ahora
 
             try
             {
-                datos.setearConsulta("Insert into POKEMONS (Numero, Nombre, Descripcion, Activo)values(" + nuevo.Numero + " , '" + nuevo.Nombre +  "', ' " + nuevo.Descripcion + "', 1)");
-                datos.ejecutarAccion();
+                datos.setearConsulta("Insert into POKEMONS (Numero, Nombre, Descripcion, Activo, IdTipo, IdDebilidad)values(" + nuevo.Numero + " , '" + nuevo.Nombre +  "', ' " + nuevo.Descripcion + "', 1, @idTipo, @idDebilidad)");
+                
+                //parametros.. @idTipo, @idDebilidad.. se crea como una referencia en la consulta.. entonces
+                //realiza la consulta y se encuentra con una referencia a un parametro.. baja consulta y completa con el dato 
+                //tomado.. 
+
+                datos.setearParametro("@idTipo", nuevo.Tipo.Id); //se recibio en la funcion el nuevo pokemon..
+                                                                 //tomado de la ventana. AGREGAR POKEMON..
+                                                                 //ahi se tomo de la lista el tipo y la debilidad..
+                datos.setearParametro("@idDebilidad" , nuevo.Debilidad.Id);
+
+                datos.ejecutarAccion(); //cargada la solicitud/consulta y los parametros.. ejecutamos..
             }
             catch (Exception ex)
             {

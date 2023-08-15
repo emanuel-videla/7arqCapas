@@ -30,18 +30,19 @@ namespace winform_app
 
         private void frmPokemons_Load_1(object sender, EventArgs e)
         {
-            PokemonNegocio negocio = new PokemonNegocio();
-            //creo un objeto para invocarlo
+            try
+            {
+                PokemonNegocio negocio = new PokemonNegocio();           //creo un objeto para invocarlo
+                listaPokemon = negocio.listar();
+                dgvPokemons.DataSource = listaPokemon;
+                dgvPokemons.Columns["UrlImagen"].Visible = false; //con esto oculto una columna.. la del url que muestra imagen
+                cargarImagen(listaPokemon[0].UrlImagen);           //le cargamos por defecto la primer posicion
+            }
+            catch (Exception ex)
+            {
 
-            listaPokemon = negocio.listar();
-
-            dgvPokemons.DataSource = listaPokemon;
-
-            dgvPokemons.Columns["UrlImagen"].Visible = false; //con esto oculto una columna.. la del url que muestra imagen
-
-
-            cargarImagen(listaPokemon[0].UrlImagen);
-            //le cargamos por defecto la primer posicion
+                MessageBox.Show(ex.ToString());
+            }
         }
 
 

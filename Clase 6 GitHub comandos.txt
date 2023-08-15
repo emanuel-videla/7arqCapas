@@ -1,0 +1,36 @@
+se crea una nueva carpeta y dentro de esta carpeta se ejectura un git bash con el click derecho 
+
+git clone y el link y se clona se baja lo que esta en la nube... como el gitIgnore
+
+pego los archivos q quiero subir en la carpeta clonada
+
+----y se crea una carpeta en el destino donde se copiaran los archivos para clonarlos
+
+git status leera la carpeta e identificara los nuevos archivos
+
+si hace falta se dirige a la carpeta correcta con "cd" nombre de la carpeta clonada
+
+git add .     ---- preparara los archivos locales para subirlos al repositorio
+
+git commit -m "mensaje" -- los encomienda encarga que se suban
+
+git status para checkear q no quedan archivos pendientes-- nada pendiente todo comiteado
+
+git push para subir deberia estar clonado en la nube
+
+--- hay que meter los archivos en la carpeta clonada sino se duplican tmb en la memoria interna.. los clonados son vinculados
+
+
+SI CAMBIO
+git status me va a decir que modifique un archivo
+
+git add . 			    --- agrega todos 
+git add ejemplo/frmPrincipal.css     sino ruta especifica
+
+git status checkea
+
+git commit -m ".."
+
+git status check
+
+git push 			se actualizo..

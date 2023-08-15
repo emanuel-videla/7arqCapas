@@ -102,7 +102,7 @@
             // 
             // btnCancelar
             // 
-            this.btnCancelar.Location = new System.Drawing.Point(175, 234);
+            this.btnCancelar.Location = new System.Drawing.Point(166, 235);
             this.btnCancelar.Name = "btnCancelar";
             this.btnCancelar.Size = new System.Drawing.Size(75, 23);
             this.btnCancelar.TabIndex = 7;
@@ -150,7 +150,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(278, 324);
+            this.ClientSize = new System.Drawing.Size(295, 317);
             this.Controls.Add(this.cbDebilidad);
             this.Controls.Add(this.cbTipo);
             this.Controls.Add(this.lblDebilidad);
