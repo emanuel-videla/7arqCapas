@@ -91,7 +91,7 @@ namespace negocio //depende de negocio ahora
 
             try
             {
-                datos.setearConsulta("Insert into POKEMONS (Numero, Nombre, Descripcion, Activo, IdTipo, IdDebilidad)values(" + nuevo.Numero + " , '" + nuevo.Nombre +  "', ' " + nuevo.Descripcion + "', 1, @idTipo, @idDebilidad)");
+                datos.setearConsulta("Insert into POKEMONS (Numero, Nombre, Descripcion, Activo, IdTipo, IdDebilidad, UrlImagen)values(" + nuevo.Numero + " , '" + nuevo.Nombre +  "', ' " + nuevo.Descripcion + "', 1, @idTipo, @idDebilidad, @urlImagen)");
                 
                 //parametros.. @idTipo, @idDebilidad.. se crea como una referencia en la consulta.. entonces
                 //realiza la consulta y se encuentra con una referencia a un parametro.. baja consulta y completa con el dato 
@@ -100,8 +100,12 @@ namespace negocio //depende de negocio ahora
                 datos.setearParametro("@idTipo", nuevo.Tipo.Id); //se recibio en la funcion el nuevo pokemon..
                                                                  //tomado de la ventana. AGREGAR POKEMON..
                                                                  //ahi se tomo de la lista el tipo y la debilidad..
-                datos.setearParametro("@idDebilidad" , nuevo.Debilidad.Id);
-
+               
+                datos.setearParametro("@idDebilidad" , nuevo.Debilidad.Id); //"ID" xq es una referencia numerica que nos
+                                                                            //devuelve texto en la comparacion
+                
+                datos.setearParametro("@urlImagen", nuevo.UrlImagen);
+                
                 datos.ejecutarAccion(); //cargada la solicitud/consulta y los parametros.. ejecutamos..
             }
             catch (Exception ex)

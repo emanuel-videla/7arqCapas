@@ -30,6 +30,12 @@ namespace winform_app
 
         private void frmPokemons_Load_1(object sender, EventArgs e)
         {
+            cargar();
+        }
+
+        private void cargar() //creamos el metodo que hara que se actualice la ventana anterior cuando se cierre la de carga
+        {
+
             try
             {
                 PokemonNegocio negocio = new PokemonNegocio();           //creo un objeto para invocarlo
@@ -44,7 +50,6 @@ namespace winform_app
                 MessageBox.Show(ex.ToString());
             }
         }
-
 
 
         private void dgvPokemons_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -67,6 +72,7 @@ namespace winform_app
         {
             frmAltaPokemon alta = new frmAltaPokemon();  //creamos una instancia del tipo
             alta.ShowDialog();                          //invocamos la ventana
+            cargar();               //creamos el metodo que hara que se actualice la ventana anterior cuando se cierre la de carga
         }
 
           private void cargarImagen(string imagen)  //creo un metodo para invocarlo y asi no
