@@ -13,11 +13,13 @@ namespace dominio
 {
     public class Pokemon //deben ser publicas para que se puedan usar en winform
     {
-        //Podemos usar anotaciones para hacer correcciones en el nombre de la columna
+        public int Id { get; set; }
 
+        //Podemos usar anotaciones para hacer correcciones en el nombre de la columna 
         [DisplayName("Número")]  //se pone sobre la columna que vamos a editar.. ahora numero y descripcion
                                  //invocamos el using using System.ComponentModel;
         public int Numero { get; set; }
+        
         public string Nombre { get; set; }
         [DisplayName("Descripción")]
         public string Descripcion { get; set; }

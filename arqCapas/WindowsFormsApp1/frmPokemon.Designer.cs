@@ -36,6 +36,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.dgvPokemons = new System.Windows.Forms.DataGridView();
             this.btnAgregar = new System.Windows.Forms.Button();
+            this.btnModificar = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pbPokemon)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvPokemons)).BeginInit();
             this.SuspendLayout();
@@ -111,17 +112,28 @@
             // 
             this.btnAgregar.Location = new System.Drawing.Point(12, 322);
             this.btnAgregar.Name = "btnAgregar";
-            this.btnAgregar.Size = new System.Drawing.Size(75, 23);
+            this.btnAgregar.Size = new System.Drawing.Size(117, 23);
             this.btnAgregar.TabIndex = 12;
             this.btnAgregar.Text = "Agregar Pokemon";
             this.btnAgregar.UseVisualStyleBackColor = true;
             this.btnAgregar.Click += new System.EventHandler(this.btnAgregar_Click);
             // 
+            // btnModificar
+            // 
+            this.btnModificar.Location = new System.Drawing.Point(145, 322);
+            this.btnModificar.Name = "btnModificar";
+            this.btnModificar.Size = new System.Drawing.Size(134, 23);
+            this.btnModificar.TabIndex = 13;
+            this.btnModificar.Text = "Modificar Pokemon";
+            this.btnModificar.UseVisualStyleBackColor = true;
+            this.btnModificar.Click += new System.EventHandler(this.btnModificar_Click);
+            // 
             // frmPokemons
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(895, 370);
+            this.ClientSize = new System.Drawing.Size(902, 361);
+            this.Controls.Add(this.btnModificar);
             this.Controls.Add(this.btnAgregar);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.pbPokemon);
@@ -151,6 +163,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.DataGridView dgvPokemons;
         private System.Windows.Forms.Button btnAgregar;
+        private System.Windows.Forms.Button btnModificar;
     }
 }
 

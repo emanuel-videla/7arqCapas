@@ -33,7 +33,7 @@ namespace negocio //depende de negocio ahora
 
                 comando.CommandType = System.Data.CommandType.Text; //texto comando.. tipo ejecucion son comportamientos funciones en la nube
 
-                comando.CommandText = "Select Numero, Nombre, P.Descripcion, UrlImagen, E.Descripcion Tipo, D.Descripcion Debilidad From POKEMONS P, ELEMENTOS E, ELEMENTOS D Where E.Id = P.IdTipo And D.Id = P.IdDebilidad";
+                comando.CommandText = "Select Numero, Nombre, P.Descripcion, UrlImagen, E.Descripcion Tipo, D.Descripcion Debilidad, P.IdTipo, P.IdDebilidad, P.Id From POKEMONS P, ELEMENTOS E, ELEMENTOS D Where E.Id = P.IdTipo And D.Id = P.IdDebilidad";
                 //ejemplo de comando con texto.. probar en sql primero
 
                 comando.Connection = conexion;   //el comando se ejecuta en la ejecion indicada arriba ip..
@@ -46,6 +46,10 @@ namespace negocio //depende de negocio ahora
                 while (lector.Read())    //si tiene una linea mas va a devolver un true.. corta cuando ya no hay mas objetos
                 {
                     Pokemon aux = new Pokemon();
+
+                    aux.Id = (int)lector["Id"]; //la propiedad ID de Pokemon se le asigna el valor recibido
+                    //por el lector ID
+
                     aux.Numero = lector.GetInt32(0);   // indice 0 porque el numero es el primer valor del vector 0, 1, 2, 3.. se 
                                                        //puede usar con los string pero se muestra otra forma de hacerlo
 
@@ -63,11 +67,15 @@ namespace negocio //depende de negocio ahora
                     if (!(lector["UrlImagen"] is DBNull))               //si la ubicacion del lector "Url" es nula.. negado
                         aux.UrlImagen = (string)lector["UrlImagen"];    //entonces afirmativo.. no lee y el string queda vacio
 
+
+
                     //tipo elemento no esta instanciado
                     aux.Tipo = new Elemento();
+                    aux.Tipo.Id = (int)lector["IdTipo"];
                     aux.Tipo.Descripcion = (string)lector["Tipo"];
 
                     aux.Debilidad = new Elemento();
+                    aux.Debilidad.Id = (int)lector["IdDebilidad"];
                     aux.Debilidad.Descripcion = (string)lector["Debilidad"];
 
                     lista.Add(aux); //agrego a la lista.. en cada vuelva posicion de vector... hasta q de falso y termina
@@ -118,9 +126,32 @@ namespace negocio //depende de negocio ahora
             }
         }
 
-        public void modificar(Pokemon modificar)
+        public void modificar(Pokemon poke)
         {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                datos.setearConsulta("update POKEMONS set Numero = @numero, Nombre = @nombre, Descripcion = @descripcion, UrlImagen = @imagen, IdTipo = @idTipo, IdDebilidad = @idDebilidad where id = @id");
+                datos.setearParametro("@numero", poke.Numero);
+                datos.setearParametro("@nombre", poke.Nombre);
+                datos.setearParametro("@descripcion", poke.Descripcion);
+                datos.setearParametro("@imagen", poke.UrlImagen);
+                datos.setearParametro("@idTipo", poke.Tipo.Id);
+                datos.setearParametro("@idDebilidad", poke.Debilidad.Id);
+                datos.setearParametro("@id", poke.Id);
 
+                datos.ejecutarAccion();
+                
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
         }
     }
 }

@@ -14,9 +14,23 @@ namespace WindowsFormsApp1
 {
     public partial class frmAltaPokemon : Form
     {
-        public frmAltaPokemon()
+        private Pokemon pokemon = null; //esto servira para hacer una validacion.. 
+        //si "pokemon" es nulo significa que no estamos modificando estamos abriendo la ventana normal
+        // cuando tenga un valor es porque recibimos un pokemon "seleccionado"
+
+        public frmAltaPokemon() 
         {
             InitializeComponent();
+        }
+
+        public frmAltaPokemon(Pokemon pokemon) //recibe un poke seleccionado
+        {
+            InitializeComponent();
+            this.pokemon = pokemon; //this pokemon se refiere a pokemon dentro de esta clase creado arriba
+                                    // y = pokemon se refiere al pokemon recibido por parametro
+                                    //entonces al de este scope le asignamos el valor recibido
+            
+            Text = "Modificar Pokemon"; //para cambiarle el nombre a la ventana
         }
 
         private void btnCancelar_Click(object sender, EventArgs e)
@@ -26,21 +40,40 @@ namespace WindowsFormsApp1
 
         private void btnAceptar_Click(object sender, EventArgs e)
         {
-            Pokemon poke = new Pokemon();
+            //Pokemon poke = new Pokemon();  antes habia un solo evento para este "agregar"
+            //ahora tenemos dos instancias asi que hay que buscar otro metodo
+
             PokemonNegocio negocio = new PokemonNegocio();
 
             try
             {
-                poke.Numero = int.Parse(txtNumero.Text);
-                poke.Nombre = txtNombre.Text;
-                poke.Descripcion = txtDescripcion.Text;
-                poke.UrlImagen = txtUrlImagen.Text;
-                poke.Tipo = (Elemento)cbTipo.SelectedItem;
-                poke.Debilidad = (Elemento)cbDebilidad.SelectedItem;
+                if (pokemon == null)   //si apretaste aceptar.. tal vez signifique que quieras agregar
+                                       //un pokemon nuevo.. x eso creamos una nueva instancia que anulara
+                                       //la anterior
+                    pokemon = new Pokemon();
+                
 
+                pokemon.Numero = int.Parse(txtNumero.Text);
+                pokemon.Nombre = txtNombre.Text;
+                pokemon.Descripcion = txtDescripcion.Text;
+                pokemon.UrlImagen = txtUrlImagen.Text;
+                pokemon.Tipo = (Elemento)cbTipo.SelectedItem;
+                pokemon.Debilidad = (Elemento)cbDebilidad.SelectedItem;
 
-                negocio.agregar(poke);
-                MessageBox.Show("Agregado correctamente");
+                //aqui arriba al crear una instancia nueva y al haberse asignado valores a las variables 
+                //ya no estan nulas entonces podemos hacer validaciones
+
+                if(pokemon.Id != 0) //si ya tiene un valor modifico
+                {
+                    negocio.modificar(pokemon);
+                    MessageBox.Show("Modificado correctamente");
+                }
+                else
+                {
+                    negocio.agregar(pokemon);
+                    MessageBox.Show("Agregado correctamente");
+                }
+
                 Close();
 
             }
@@ -57,7 +90,25 @@ namespace WindowsFormsApp1
             try
             {
                 cbTipo.DataSource = elementoNegocio.listar();
+                cbTipo.ValueMember = "Id"; //nombres de la propiedades de elemento id y descrip...
+                cbTipo.DisplayMember = "Descripcion"; //tomamos 2 valores q querramos..
+
                 cbDebilidad.DataSource = elementoNegocio.listar();
+                cbDebilidad.ValueMember = "Id"; 
+                cbDebilidad.DisplayMember = "Descripcion";
+
+                //usamos la validacion del poke = null
+                if (pokemon != null) //cargamos los valores preasignado.. extraidos de la DB
+                {
+                    txtNumero.Text = pokemon.Numero.ToString();
+                    txtNombre.Text = pokemon.Nombre;
+                    txtDescripcion.Text = pokemon.Descripcion;
+                    txtUrlImagen.Text = pokemon.UrlImagen; //aca carga el link
+                    cargarImagen(pokemon.UrlImagen);       //aca cargan la imagen
+
+                    cbTipo.SelectedValue = pokemon.Tipo.Id;
+                    cbDebilidad.SelectedValue = pokemon.Debilidad.Id;
+                }
             }
             catch (Exception ex)
             {

@@ -42,6 +42,7 @@ namespace winform_app
                 listaPokemon = negocio.listar();
                 dgvPokemons.DataSource = listaPokemon;
                 dgvPokemons.Columns["UrlImagen"].Visible = false; //con esto oculto una columna.. la del url que muestra imagen
+                dgvPokemons.Columns["Id"].Visible = false;
                 cargarImagen(listaPokemon[0].UrlImagen);           //le cargamos por defecto la primer posicion
             }
             catch (Exception ex)
@@ -67,13 +68,7 @@ namespace winform_app
             //entonces en la pictbox va a cargar lo que este seleccionando
         }
 
-        private void btnAgregar_Click(object sender, EventArgs e)
-
-        {
-            frmAltaPokemon alta = new frmAltaPokemon();  //creamos una instancia del tipo
-            alta.ShowDialog();                          //invocamos la ventana
-            cargar();               //creamos el metodo que hara que se actualice la ventana anterior cuando se cierre la de carga
-        }
+       
 
           private void cargarImagen(string imagen)  //creo un metodo para invocarlo y asi no
           {                                           //repetir
@@ -88,5 +83,27 @@ namespace winform_app
                 //asi muestre una imagen que indica que no hay una real y evitar que crashee
             }
           }
+
+        private void btnAgregar_Click(object sender, EventArgs e)
+
+        {
+            frmAltaPokemon alta = new frmAltaPokemon();  //creamos una instancia del tipo
+            alta.ShowDialog();                          //invocamos la ventana
+            cargar();               //creamos el metodo que hara que se actualice la ventana anterior cuando se cierre la de carga
+        }
+        private void btnModificar_Click(object sender, EventArgs e)
+        {
+            Pokemon seleccionado;
+            seleccionado = (Pokemon)dgvPokemons.CurrentRow.DataBoundItem; //fila actual.. item seleccionado
+            //le voy a mandar el seleccionado que va a ser el que quiero modificar..
+
+
+
+            frmAltaPokemon modificar = new frmAltaPokemon(seleccionado); 
+            //esta es una instancia de metodo.. vamos a modificarlo para que reciba un parametro
+
+            modificar.ShowDialog(); 
+            cargar(); 
+        }
     }
 }
