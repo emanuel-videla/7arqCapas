@@ -33,7 +33,7 @@ namespace negocio //depende de negocio ahora
 
                 comando.CommandType = System.Data.CommandType.Text; //texto comando.. tipo ejecucion son comportamientos funciones en la nube
 
-                comando.CommandText = "Select Numero, Nombre, P.Descripcion, UrlImagen, E.Descripcion Tipo, D.Descripcion Debilidad, P.IdTipo, P.IdDebilidad, P.Id From POKEMONS P, ELEMENTOS E, ELEMENTOS D Where E.Id = P.IdTipo And D.Id = P.IdDebilidad";
+                comando.CommandText = "Select Numero, Nombre, P.Descripcion, UrlImagen, E.Descripcion Tipo, D.Descripcion Debilidad, P.IdTipo, P.IdDebilidad, P.Id From POKEMONS P, ELEMENTOS E, ELEMENTOS D Where E.Id = P.IdTipo And D.Id = P.IdDebilidad And P.Activo = 1";
                 //ejemplo de comando con texto.. probar en sql primero
 
                 comando.Connection = conexion;   //el comando se ejecuta en la ejecion indicada arriba ip..
@@ -66,8 +66,6 @@ namespace negocio //depende de negocio ahora
 
                     if (!(lector["UrlImagen"] is DBNull))               //si la ubicacion del lector "Url" es nula.. negado
                         aux.UrlImagen = (string)lector["UrlImagen"];    //entonces afirmativo.. no lee y el string queda vacio
-
-
 
                     //tipo elemento no esta instanciado
                     aux.Tipo = new Elemento();
@@ -151,6 +149,141 @@ namespace negocio //depende de negocio ahora
             finally
             {
                 datos.cerrarConexion();
+            }
+        }
+
+        public void eliminar(int id)
+        {
+            
+            try
+            {
+                AccesoDatos datos = new AccesoDatos();
+                datos.setearConsulta("delete from pokemons where id = @id");
+                datos.setearParametro("@id", id);
+                datos.ejecutarAccion();
+
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
+        public void eliminarLogico(int id)
+        {
+            try
+            {
+                AccesoDatos datos = new AccesoDatos();
+                datos.setearConsulta("update pokemons set activo = 0 where id = @id");
+                datos.setearParametro("@id", id);
+                datos.ejecutarAccion();
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
+        public List<Pokemon> filtrar(string campo, string criterio, string filtro)
+        {
+            List<Pokemon> lista = new List<Pokemon>();
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                string consulta = "Select Numero, Nombre, P.Descripcion, UrlImagen, E.Descripcion Tipo, D.Descripcion Debilidad, P.IdTipo, P.IdDebilidad, P.Id From POKEMONS P, ELEMENTOS E, ELEMENTOS D Where E.Id = P.IdTipo And D.Id = P.IdDebilidad And P.Activo = 1 And ";
+
+                if (filtro != "") //error salvado.. consulta numero < "" (vacio).. crashea.. 
+                {
+                    switch (campo)
+                    {
+                        case "Número":
+                            switch (criterio)
+                            {
+                                case "Menor a":
+                                    consulta += "Numero < " + filtro;
+                                    break;
+                                case "Mayor a":
+                                    consulta += "Numero > " + filtro;
+                                    break;
+                                case "Igual a":
+                                    consulta += "Numero = " + filtro;
+                                    break;
+                            }//Numero
+                            break;
+
+                        case "Nombre":
+                            switch (criterio)
+                            {
+                                case "Comienza con":        //se usa % para resultado parcial
+                                    consulta += "Nombre like '" + filtro + "%'";
+                                    break;          //comienza con es xxx + % (atencion a comillas dobles y simples)
+                                case "Finaliza con":
+                                    consulta += "Nombre like '%" + filtro + "'";
+                                    break;         //finaliza con es % + xxx
+                                case "Contiene":
+                                    consulta += "Nombre like '%" + filtro + "%'";
+                                    break;
+                            }//Nombre
+                            break;
+
+                        case "Descripción":
+                            switch (criterio)
+                            {
+                                case "Comienza con":
+                                    consulta += "P.Descripcion like '" + filtro + "%'";
+                                    break;
+                                case "Finaliza con":
+                                    consulta += "P.Descripcion like '%" + filtro + "'";
+                                    break;
+                                case "Contiene":
+                                    consulta += "P.Descripcion like '%" + filtro + "%'";
+                                    break;
+                            }//Descripcion
+                            break;
+                    } //campo
+                } else
+                    consulta = "Select Numero, Nombre, P.Descripcion, UrlImagen, E.Descripcion Tipo, D.Descripcion Debilidad, P.IdTipo, P.IdDebilidad, P.Id From POKEMONS P, ELEMENTOS E, ELEMENTOS D Where E.Id = P.IdTipo And D.Id = P.IdDebilidad And P.Activo = 1 ";
+
+
+
+                datos.setearConsulta(consulta);
+                datos.ejecutarLectura();
+
+                while (datos.Lector.Read())     //si hay lectura.. bool yes.. 
+                {
+                    Pokemon aux = new Pokemon();
+
+                    aux.Id = (int)datos.Lector["Id"]; 
+
+                    aux.Numero = datos.Lector.GetInt32(0);  
+
+                    aux.Nombre = (string)datos.Lector["Nombre"];     
+                    aux.Descripcion = (string)datos.Lector["Descripcion"];
+
+
+                    if (!(datos.Lector["UrlImagen"] is DBNull))         
+                        aux.UrlImagen = (string)datos.Lector["UrlImagen"];    
+
+                    aux.Tipo = new Elemento();
+                    aux.Tipo.Id = (int)datos.Lector["IdTipo"];
+                    aux.Tipo.Descripcion = (string)datos.Lector["Tipo"];
+
+                    aux.Debilidad = new Elemento();
+                    aux.Debilidad.Id = (int)datos.Lector["IdDebilidad"];
+                    aux.Debilidad.Descripcion = (string)datos.Lector["Debilidad"];
+
+                    lista.Add(aux);  
+                }
+
+
+                return lista;
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
         }
     }

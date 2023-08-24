@@ -25,12 +25,17 @@ namespace winform_app
         }
 
 
-        private void frmPokemons_Load(object sender, EventArgs e)
-        {        }
+        //private void frmPokemons_Load(object sender, EventArgs e)
+        //{aca se cargan las funciones metodos al momento de abrir la apk.. es la carga de arranque}
 
         private void frmPokemons_Load_1(object sender, EventArgs e)
         {
             cargar();
+
+            //filtro avanzado.. el segundo cbo dependera de la primer eleccion
+            cbCampo.Items.Add("Número");
+            cbCampo.Items.Add("Nombre");
+            cbCampo.Items.Add("Descripción");
         }
 
         private void cargar() //creamos el metodo que hara que se actualice la ventana anterior cuando se cierre la de carga
@@ -41,8 +46,7 @@ namespace winform_app
                 PokemonNegocio negocio = new PokemonNegocio();           //creo un objeto para invocarlo
                 listaPokemon = negocio.listar();
                 dgvPokemons.DataSource = listaPokemon;
-                dgvPokemons.Columns["UrlImagen"].Visible = false; //con esto oculto una columna.. la del url que muestra imagen
-                dgvPokemons.Columns["Id"].Visible = false;
+                ocultarColumnas();
                 cargarImagen(listaPokemon[0].UrlImagen);           //le cargamos por defecto la primer posicion
             }
             catch (Exception ex)
@@ -52,7 +56,11 @@ namespace winform_app
             }
         }
 
-
+        private void ocultarColumnas()
+        {
+            dgvPokemons.Columns["UrlImagen"].Visible = false; //con esto oculto una columna.. la del url que muestra imagen
+            dgvPokemons.Columns["Id"].Visible = false;
+        }
         private void dgvPokemons_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             //(Pokemon)dgvPokemons.CurrentRow.DataBoundItem;
@@ -62,10 +70,12 @@ namespace winform_app
             //entonces le indicamos explisitamente que es un pokemon
 
             //creamos una variable para guardar la seleccion.. tipo pokemon tmb
-
-            Pokemon seleccionado = (Pokemon)dgvPokemons.CurrentRow.DataBoundItem;
-             cargarImagen(seleccionado.UrlImagen);
-            //entonces en la pictbox va a cargar lo que este seleccionando
+            if (dgvPokemons.CurrentRow != null) //si hay una fila seleccionada va a entrar y cargar
+            { //para evitar exception
+                Pokemon seleccionado = (Pokemon)dgvPokemons.CurrentRow.DataBoundItem;
+                cargarImagen(seleccionado.UrlImagen);
+                //entonces en la pictbox va a cargar lo que este seleccionando
+            }
         }
 
        
@@ -105,5 +115,119 @@ namespace winform_app
             modificar.ShowDialog(); 
             cargar(); 
         }
-    }
-}
+
+        private void btnEliminarFisico_Click(object sender, EventArgs e)
+        {
+            eliminar();
+        }
+
+        private void btnEliminacionLogica_Click(object sender, EventArgs e)
+        {
+            eliminar(true);
+        }
+
+
+        private void eliminar(bool logico = false) //si pongo esta condicion estoy diciendo que el
+        {                                     //parametro a recibir es opcional.. si saco la igualdad
+                                              //me diria en el metodo que necesito enviar un valor bool
+            PokemonNegocio negocio = new PokemonNegocio();
+            Pokemon seleccionado;
+            try
+            {
+                //pedir confirmacion.. metodo sobrecargado
+                //guardamos el resultado en una variable 
+                DialogResult respuesta = MessageBox.Show("Seguro desea eliminar? No se puede recuperar este registro", "Eliminar", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+
+                if (respuesta == DialogResult.Yes) 
+                {
+                    seleccionado = (Pokemon)dgvPokemons.CurrentRow.DataBoundItem;
+                    
+                    if (logico)
+                        negocio.eliminarLogico(seleccionado.Id);
+                    else
+                        negocio.eliminar(seleccionado.Id);
+                    
+                    cargar();
+                }
+
+
+
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
+        
+
+        private void txtFiltro_TextChanged(object sender, EventArgs e)
+        {
+            List<Pokemon> listaFiltrada;
+            string filtro = txtFiltro.Text;
+
+            if (filtro.Length > 2)
+            {
+                //expresion lamda es como un for each.. en cada verificacion si es positiva la comparacion
+                //lo guarda en una nueva lista.. ahora variable listaFiltrada..
+                listaFiltrada = listaPokemon.FindAll(x => x.Nombre.ToUpper().Contains(filtro.ToUpper() ) || x.Tipo.Descripcion.ToUpper().Contains(filtro.ToUpper() ));
+            } //constains buscara resultado parciales .. mas condiciones con O ||...
+            else
+            {
+                listaFiltrada = listaPokemon;
+            }
+
+            dgvPokemons.DataSource = null;
+            dgvPokemons.DataSource = listaFiltrada;
+            ocultarColumnas();
+        }
+
+        private void cbCampo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string opcion = cbCampo.SelectedItem.ToString();
+            if (opcion == "Número")
+            {
+                cbCriterio.Items.Clear(); //siempre primero limpiamos.. luego asignamos despleglables
+                cbCriterio.Items.Add("Menor a");
+                cbCriterio.Items.Add("Igual a");
+                cbCriterio.Items.Add("Mayor a");
+            }else{
+                cbCriterio.Items.Clear();
+                cbCriterio.Items.Add("Comienza con");
+                cbCriterio.Items.Add("Contiene");
+                cbCriterio.Items.Add("Finaliza con"); //se podria usar el filtro rapido..
+                //pero la practica es hacer una consulta sobre la base de datos.. no recomendado 
+            }
+        }
+        private void btnFiltro_Click(object sender, EventArgs e)
+        {
+            PokemonNegocio negocio = new PokemonNegocio();
+            //if (txtFiltroAvanzado.Text.Length > 0)
+            //{
+                try
+                {
+                    string campo = cbCampo.SelectedItem.ToString();
+                    string criterio = cbCriterio.SelectedItem.ToString();
+                    string filtro = txtFiltroAvanzado.Text;
+
+                    dgvPokemons.DataSource = negocio.filtrar(campo, criterio, filtro);
+                }
+
+                catch (Exception ex)
+
+                {
+                    MessageBox.Show(ex.ToString());
+
+                }
+           //}
+        }
+
+       
+
+
+
+
+    } //pr
+} //pr
