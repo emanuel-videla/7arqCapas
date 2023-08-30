@@ -63,6 +63,11 @@ namespace winform_app
         }
         private void dgvPokemons_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
+            
+        }
+
+        private void dgvPokemons_SelectionChanged(object sender, EventArgs e)
+        {
             //(Pokemon)dgvPokemons.CurrentRow.DataBoundItem;
 
             //al data grid.. la fila actual... dame el objeto enlazado a esa fila.. 
@@ -78,9 +83,7 @@ namespace winform_app
             }
         }
 
-       
-
-          private void cargarImagen(string imagen)  //creo un metodo para invocarlo y asi no
+        private void cargarImagen(string imagen)  //creo un metodo para invocarlo y asi no
           {                                           //repetir
             try
             {
@@ -201,6 +204,46 @@ namespace winform_app
                 //pero la practica es hacer una consulta sobre la base de datos.. no recomendado 
             }
         }
+
+        private bool validarFiltro()
+        {
+            if (cbCampo.SelectedIndex < 0)
+            {
+                MessageBox.Show("Por favor complete el campo para filtrar...");
+                return true;
+            }
+            if (cbCriterio.SelectedIndex < 0)
+            {
+                MessageBox.Show("Por favor complete el criterio para filtrar...");
+                return true;
+            }
+            if (cbCampo.SelectedItem.ToString() == "Número") 
+            { 
+                if (string.IsNullOrEmpty(txtFiltroAvanzado.Text))
+                {
+                    MessageBox.Show("Debes ingresar números para referenciar..");
+                    return true;
+                }
+            
+                if (!(soloNumeros(txtFiltroAvanzado.Text)))
+                {
+                    MessageBox.Show("Solo se filtran números en este campo..");
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private bool soloNumeros(string cadena)
+        {
+            foreach (char caracter in cadena)
+            {
+                if (!(char.IsNumber(caracter))) //si algun caracter es numero.. y esta negado
+                    return false;             //osea.. sino es numero returna falso y corta..
+            }
+            return true;
+        }
+
         private void btnFiltro_Click(object sender, EventArgs e)
         {
             PokemonNegocio negocio = new PokemonNegocio();
@@ -208,7 +251,12 @@ namespace winform_app
             //{
                 try
                 {
-                    string campo = cbCampo.SelectedItem.ToString();
+                if (validarFiltro()) //si entra al if.. y es positivo.. significa que no se ha
+                    return;          //seleccioonado ninguna opcion .. entonces corta la 
+                                     //accion.. es como un break del switch..
+
+
+                string campo = cbCampo.SelectedItem.ToString();
                     string criterio = cbCriterio.SelectedItem.ToString();
                     string filtro = txtFiltroAvanzado.Text;
 
@@ -223,10 +271,6 @@ namespace winform_app
                 }
            //}
         }
-
-       
-
-
 
 
     } //pr

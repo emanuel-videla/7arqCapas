@@ -59,6 +59,7 @@
             // 
             // dgvPokemons
             // 
+            this.dgvPokemons.BackgroundColor = System.Drawing.SystemColors.HotTrack;
             this.dgvPokemons.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvPokemons.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.dgvPokemons.Location = new System.Drawing.Point(13, 32);
@@ -68,6 +69,7 @@
             this.dgvPokemons.Size = new System.Drawing.Size(597, 216);
             this.dgvPokemons.TabIndex = 5;
             this.dgvPokemons.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvPokemons_CellContentClick);
+            this.dgvPokemons.SelectionChanged += new System.EventHandler(this.dgvPokemons_SelectionChanged);
             // 
             // btnAgregar
             // 
@@ -203,6 +205,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.ClientSize = new System.Drawing.Size(899, 356);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.txtFiltroAvanzado);

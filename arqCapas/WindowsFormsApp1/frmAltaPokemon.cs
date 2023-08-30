@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using dominio;
 using negocio;
+using System.Configuration;
 
 namespace WindowsFormsApp1
 {
@@ -17,6 +19,8 @@ namespace WindowsFormsApp1
         private Pokemon pokemon = null; //esto servira para hacer una validacion.. 
         //si "pokemon" es nulo significa que no estamos modificando estamos abriendo la ventana normal
         // cuando tenga un valor es porque recibimos un pokemon "seleccionado"
+
+        private OpenFileDialog archivo = null; 
 
         public frmAltaPokemon() 
         {
@@ -74,6 +78,10 @@ namespace WindowsFormsApp1
                     MessageBox.Show("Agregado correctamente");
                 }
 
+                if (archivo != null && !(txtUrlImagen.Text.ToUpper().Contains("HTTP")))
+                    File.Copy(archivo.FileName, ConfigurationManager.AppSettings["images-folder"] + archivo.SafeFileName);
+                //habria q afinar que la confiiguracion para archivos con el mismo nombre..
+                
                 Close();
 
             }
@@ -134,6 +142,28 @@ namespace WindowsFormsApp1
                 //asi muestre una imagen que indica que no hay una real y evitar que crashee
             }
         }
+
+        private void btnAgregarImagen_Click(object sender, EventArgs e)
+        {
+            archivo = new OpenFileDialog();
+            archivo.Filter = "jpg|*.jpg;|png|*.png";
+            if (archivo.ShowDialog() == DialogResult.OK)
+            {
+                txtUrlImagen.Text = archivo.FileName;
+                cargarImagen(archivo.FileName);
+            }
+
+            //guardar imagen
+
+            //File.Copy(archivo.FileName, ConfigurationManager.AppSettings["images-folder"] + archivo.SafeFileName);
+            
+            //la key se usa entre los corchetes
+            //indica la referencia a la configuracion
+            //hay que crear un archivo configuracion.. referenciarlo y luego hacer uso con el using
+            //using System.Configuration
+            
+        }
+
 
 
     }
